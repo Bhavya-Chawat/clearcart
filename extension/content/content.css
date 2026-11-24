@@ -1,0 +1,19 @@
+.cc-flag-high { outline: 3px solid #e53935 !important; outline-offset: 2px !important; }
+.cc-flag-med { outline: 3px dashed #FD9B36 !important; outline-offset: 2px !important; }
+.cc-pulse { animation: cc-pulse 0.7s ease-in-out 3 !important; }
+@keyframes cc-pulse { 50% { box-shadow: 0 0 0 8px rgba(253,155,54,.55); } }
+#cc-layer { position: fixed; inset: 0; pointer-events: none; z-index: 2147483646; }
+.cc-badge { position: fixed; pointer-events: auto; background: #FD9B36; color: #1B1F6B; font: 700 11px/18px system-ui, sans-serif; padding: 0 7px; border-radius: 9px; white-space: nowrap; box-shadow: 0 1px 4px rgba(0,0,0,.3); cursor: help; }
+.cc-badge-high { background: #e53935; color: #fff; }
+.cc-hidden { display: none !important; }
+.cc-blocked { display: none !important; }
+.cc-equal { font-size: 16px !important; padding: 12px 18px !important; color: #1B1F6B !important; background: #fff !important; border: 2px solid #1B1F6B !important; border-radius: 8px !important; display: inline-block !important; font-weight: 600 !important; text-decoration: none !important; }
+.cc-fake-btn { filter: grayscale(1) !important; opacity: .45 !important; cursor: not-allowed !important; position: relative !important; outline: none !important; }
+.cc-fake-btn::after { content: "AD"; position: absolute; top: 4px; right: 6px; background: #333; color: #fff; font: 700 11px/16px system-ui; padding: 0 6px; border-radius: 4px; }
+.cc-fake-close { outline: 2px solid #e53935 !important; }
+.cc-real-btn { outline: 4px solid #1fbf4a !important; outline-offset: 3px !important; box-shadow: 0 0 0 8px rgba(31,191,74,.25) !important; position: relative !important; }
+.cc-real-btn::after { content: "✓ Real download"; position: absolute; top: -12px; right: 10px; background: #1fbf4a; color: #fff; font: 700 12px/20px system-ui; padding: 0 8px; border-radius: 10px; }
+#cc-toasts { position: fixed; right: 18px; bottom: 18px; z-index: 2147483647; display: flex; flex-direction: column; gap: 8px; }
+.cc-toast { background: #1B1F6B; color: #fff; font: 600 14px/1.4 system-ui; padding: 12px 16px; border-radius: 10px; border-left: 5px solid #FD9B36; box-shadow: 0 4px 14px rgba(0,0,0,.3); max-width: 360px; }
+.cc-banner { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 2147483647; background: #fff; color: #1B1F6B; border: 2px solid #1fbf4a; font: 600 15px system-ui; padding: 12px 18px; border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,.25); display: flex; gap: 12px; align-items: center; }
+.cc-banner button { background: none; border: 0; font-size: 20px; cursor: pointer; color: #1B1F6B; }

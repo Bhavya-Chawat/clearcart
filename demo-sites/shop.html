@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>BazaarBuy – SoundMax Pro Wireless Headphones</title>
+<meta name="cc-product" content="bazaarbuy-headphones">
+<meta name="cc-price" content="1749">
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar blue"><b>BazaarBuy</b><span class="tag">Fictional demo site</span></header>
+<main class="wrap">
+  <section class="hero card">
+    <div class="photo hp"></div>
+    <div>
+      <h1>SoundMax Pro Wireless Headphones</h1>
+      <p>40h battery · ANC · Bluetooth 5.3</p>
+      <div class="price"><span class="mrp">MRP ₹4,999</span> ₹1,749 <span class="off">65% OFF</span></div>
+      <div class="urgency" id="flashBox">⚡ Flash sale ends in <span id="flash">02:14:59</span></div>
+      <div class="viewers" id="boughtBox">🛒 <span id="bought">120</span> bought in the last hour</div>
+      <label class="check"><input type="checkbox" id="warranty" checked> Add 2-year extended warranty ₹699</label>
+      <label class="check"><input type="checkbox" id="offers" checked> Uncheck this box if you do not want to not receive offers</label>
+      <a class="btn primary big" style="background:#1565c0" href="shop-checkout.html?item=bazaarbuy-headphones&price=1749">Buy now</a>
+    </div>
+  </section>
+  <p class="note">BazaarBuy is a fictional brand built for the ClearCart demo.</p>
+</main>
+<script>
+  let s = 2 * 3600 + 14 * 60 + 59;
+  const el = document.getElementById('flash');
+  const p = (n) => String(n).padStart(2, '0');
+  setInterval(() => { s = Math.max(0, s - 1); el.textContent = p(Math.floor(s / 3600)) + ':' + p(Math.floor(s % 3600 / 60)) + ':' + p(s % 60); }, 1000);
+  document.getElementById('bought').textContent = 90 + Math.floor(Math.random() * 80);
+</script>
+</body></html>

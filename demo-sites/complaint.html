@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Demo complaint form (for testing)</title>
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar grey"><b>Demo consumer complaint form (for testing)</b><span class="tag">Not a government site</span></header>
+<main class="wrap checkout">
+  <form class="card" id="complaintForm">
+    <p class="note">This is a demo form used to test ClearCart's pre-fill feature. Nothing is sent anywhere.</p>
+    <label for="name">Your name</label><input id="name" name="name">
+    <label for="email">Email</label><input id="email" name="email" type="email">
+    <label for="company">Company / website</label><input id="company" name="company">
+    <label for="category">Category</label>
+    <select id="category" name="category">
+      <option value="">– Select –</option>
+      <option value="ecommerce">E-commerce</option>
+      <option value="travel">Travel &amp; hotels</option>
+      <option value="online-services">Online services</option>
+      <option value="other">Other</option>
+    </select>
+    <label for="patternType">Dark-pattern type</label><input id="patternType" name="patternType">
+    <label for="amount">Transaction amount (₹)</label><input id="amount" name="amount">
+    <label for="description">Description</label><textarea id="description" name="description"></textarea>
+    <label for="evidence">Evidence list</label><textarea id="evidence" name="evidence"></textarea>
+    <button class="btn primary big" type="submit" style="background:#37474f">Submit</button>
+    <p id="status" class="note"></p>
+  </form>
+</main>
+<script>
+  document.getElementById('complaintForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    document.getElementById('status').textContent = 'Demo – not submitted';
+  });
+</script>
+</body></html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>StayKart – Sea Breeze Resort, Goa</title>
+<meta name="cc-product" content="sea-breeze-goa">
+<meta name="cc-price" content="3200">
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar"><b>StayKart</b><span class="tag">Fictional demo site</span></header>
+<main class="wrap">
+  <section class="hero card">
+    <div class="photo"></div>
+    <div>
+      <h1>Sea Breeze Resort, Goa</h1>
+      <p>Calangute Beach · 4★ · Free Wi-Fi · Pool · Breakfast</p>
+      <div class="price">₹3,200 <small>/night</small></div>
+      <div class="urgency" id="timerBox">⏰ Deal ends in <span id="timer">09:59</span></div>
+      <div class="scarcity" id="scarcity">🔥 Only <b id="roomsLeft">1</b> room left!</div>
+      <div class="viewers" id="viewersBox">👀 <span id="viewers">14</span> people are viewing this hotel</div>
+      <a class="btn primary big" id="bookNow" href="checkout.html?item=sea-breeze-goa&price=3200&nights=1">Book now</a>
+    </div>
+  </section>
+
+  <h2>Similar stays near you</h2>
+  <div class="results">
+    <div class="result card">
+      <div class="thumb"></div>
+      <span class="ad-mark">Sponsored</span>
+      <h3>Palm Cove Luxury Villas</h3>
+      <p>Baga · 5★ · Rated 9.1</p>
+      <div class="p">₹6,900 /night</div>
+    </div>
+    <div class="result card">
+      <div class="thumb"></div>
+      <h3>Coconut Grove Inn</h3>
+      <p>Candolim · 3★ · Rated 8.2</p>
+      <div class="p">₹2,700 /night</div>
+    </div>
+    <div class="result card">
+      <div class="thumb"></div>
+      <h3>Sunset Shacks</h3>
+      <p>Anjuna · 3★ · Rated 7.9</p>
+      <div class="p">₹2,100 /night</div>
+    </div>
+  </div>
+  <p class="note" style="margin-bottom:90px">StayKart is a fictional brand built for the ClearCart demo.</p>
+</main>
+
+<script>
+  // FALSE URGENCY: timer restarts at 09:59 on every page load.
+  let left = 9 * 60 + 59;
+  const t = document.getElementById('timer');
+  setInterval(() => {
+    left = Math.max(0, left - 1);
+    t.textContent = String(Math.floor(left / 60)).padStart(2, '0') + ':' + String(left % 60).padStart(2, '0');
+  }, 1000);
+  // FAKE SCARCITY / SOCIAL PROOF: random on every load.
+  document.getElementById('roomsLeft').textContent = 1 + Math.floor(Math.random() * 3);
+  document.getElementById('viewers').textContent = 8 + Math.floor(Math.random() * 40);
+
+  // CONFIRM SHAMING + INTERFACE INTERFERENCE popup.
+  setTimeout(() => {
+    const m = document.createElement('div');
+    m.className = 'modal-backdrop'; m.id = 'protectModal';
+    m.innerHTML = `<div class="modal">
+        <h3>Protect your trip? 🛡️</h3>
+        <p>Cancellation cover for just ₹199</p>
+        <button class="yes" id="yesProtect">Yes, protect my trip</button>
+        <a href="#" class="decline" id="noProtect">No thanks, I like taking risks</a>
+      </div>`;
+    document.body.appendChild(m);
+    m.querySelector('#yesProtect').onclick = () => m.remove();
+    m.querySelector('#noProtect').onclick = (e) => { e.preventDefault(); m.remove(); };
+  }, 600);
+
+  // NAGGING: app banner keeps coming back after you close it.
+  function showNag() {
+    if (document.getElementById('appNag')) return;
+    const n = document.createElement('div');
+    n.className = 'nag'; n.id = 'appNag';
+    n.innerHTML = `📱 <b>Get our app for 10% off!</b> Install the StayKart app now.
+      <button class="btn primary">Install app</button>
+      <button class="close" id="nagClose" aria-label="Close">×</button>`;
+    document.body.appendChild(n);
+    n.querySelector('#nagClose').onclick = () => { n.remove(); setTimeout(showNag, 5000); };
+  }
+  setTimeout(showNag, 1200);
+</script>
+</body></html>

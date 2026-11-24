@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>BazaarBuy – Checkout</title>
+<meta name="cc-product" content="bazaarbuy-headphones">
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar blue"><b>BazaarBuy</b><span class="tag">Fictional demo site</span></header>
+<main class="wrap checkout">
+  <div class="card">
+    <h1>Your cart</h1>
+    <div class="row"><span>SoundMax Pro Wireless Headphones</span><span id="base">₹1,749</span></div>
+    <label class="row"><span><input type="checkbox" id="warranty" checked> 2-year extended warranty</span><span>₹699</span></label>
+    <div class="row"><span>Handling fee</span><span>₹49</span></div>
+    <div class="row"><span>Platform fee</span><span>₹29</span></div>
+    <div class="total"><span>Grand total:</span><span id="total">₹2,526</span></div>
+    <button class="btn primary big" style="width:100%;background:#1565c0" id="payBtn">Place order</button>
+    <p id="payMsg" class="note"></p>
+  </div>
+</main>
+<script>
+  const base = Number(new URLSearchParams(location.search).get('price') || 1749);
+  const cb = document.getElementById('warranty');
+  const fmt = (n) => '₹' + n.toLocaleString('en-IN');
+  document.getElementById('base').textContent = fmt(base);
+  function recalc() { document.getElementById('total').textContent = fmt(base + 49 + 29 + (cb.checked ? 699 : 0)); }
+  cb.addEventListener('change', recalc); recalc();
+  document.getElementById('payBtn').onclick = () => { document.getElementById('payMsg').textContent = 'Demo only – no order is placed.'; };
+</script>
+</body></html>

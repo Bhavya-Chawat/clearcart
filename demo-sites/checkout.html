@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>StayKart – Checkout</title>
+<meta name="cc-product" content="sea-breeze-goa">
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar"><b>StayKart</b><span class="tag">Fictional demo site</span></header>
+<main class="wrap checkout">
+  <div class="card">
+    <h1>Review your booking</h1>
+    <div class="row"><span id="itemName">Sea Breeze Resort, Goa – <span id="nights">1</span> night</span><span id="base">₹3,200</span></div>
+    <div class="row"><span>Platform fee</span><span>₹199</span></div>
+    <div class="row"><span>Convenience fee</span><span>₹249</span></div>
+    <label class="row"><span><input type="checkbox" id="tripProtect" checked> Trip protection</span><span>₹199</span></label>
+    <div class="row"><span>Taxes</span><span id="taxes">₹303</span></div>
+    <div class="total" id="totalRow"><span>Total payable:</span><span id="total">₹4,150</span></div>
+    <button class="btn primary big" id="payBtn" style="width:100%">Pay now</button>
+    <p id="payMsg" class="note"></p>
+  </div>
+</main>
+<script>
+  const q = new URLSearchParams(location.search);
+  const price = Number(q.get('price') || 3200), nights = Number(q.get('nights') || 1);
+  const base = price * nights, taxes = Math.round(base * 0.0947);
+  const fmt = (n) => '₹' + n.toLocaleString('en-IN');
+  document.getElementById('nights').textContent = nights;
+  document.getElementById('base').textContent = fmt(base);
+  document.getElementById('taxes').textContent = fmt(taxes);
+  const cb = document.getElementById('tripProtect');
+  function recalc() {
+    const total = base + 199 + 249 + taxes + (cb.checked ? 199 : 0);
+    document.getElementById('total').textContent = fmt(total);
+  }
+  cb.addEventListener('change', recalc); cb.addEventListener('input', recalc); recalc();
+  document.getElementById('payBtn').onclick = () => { document.getElementById('payMsg').textContent = 'Demo only – no payment is processed.'; };
+</script>
+</body></html>

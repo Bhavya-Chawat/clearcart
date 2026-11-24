@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sea Breeze Resort – Confirm booking</title>
+<meta name="cc-product" content="sea-breeze-goa">
+<link rel="stylesheet" href="assets/demo.css"></head>
+<body>
+<header class="topbar teal"><b>Sea Breeze Resort</b><span class="tag">Official site · fictional demo</span></header>
+<main class="wrap checkout">
+  <div class="card">
+    <h1>Confirm your booking</h1>
+    <div class="row"><span>Deluxe room – 1 night (taxes &amp; fees included)</span><span>₹3,600</span></div>
+    <div class="total"><span>Total payable:</span><span id="total">₹3,600</span></div>
+    <button class="btn primary big" style="width:100%;background:#00796b" id="payBtn">Pay at hotel</button>
+    <p id="payMsg" class="note"></p>
+  </div>
+</main>
+<script>document.getElementById('payBtn').onclick = () => { document.getElementById('payMsg').textContent = 'Demo only.'; };</script>
+</body></html>

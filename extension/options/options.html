@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>ClearCart options</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 30px auto; color: #1B1F6B; padding: 0 16px; }
+  h1 { display: flex; align-items: center; gap: 10px; } h1 img { width: 36px; }
+  fieldset { border: 1px solid #dde; border-radius: 10px; margin: 16px 0; padding: 14px 18px; }
+  legend { font-weight: 700; padding: 0 6px; }
+  label { display: block; margin: 10px 0 4px; font-weight: 600; font-size: 14px; }
+  input[type=text], input[type=password], input[type=email], input[type=url], select { width: 100%; padding: 8px; border: 1px solid #ccd; border-radius: 6px; font: inherit; box-sizing: border-box; }
+  .check { display: flex; gap: 8px; align-items: center; font-weight: 500; }
+  button { background: #1B1F6B; color: #fff; border: 0; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+  button.alt { background: #FD9B36; color: #1B1F6B; }
+  .note { color: #667; font-size: 12px; } #status, #micStatus { margin-left: 10px; font-weight: 600; }
+</style></head>
+<body>
+  <h1><img src="../icons/icon48.png" alt="">ClearCart options</h1>
+
+  <fieldset><legend>Voice Guardian</legend>
+    <label for="elevenKey">ElevenLabs API key (optional)</label>
+    <input id="elevenKey" type="password" autocomplete="off" placeholder="Stored only in this browser">
+    <label for="voiceId">ElevenLabs voice ID</label>
+    <input id="voiceId" type="text" placeholder="e.g. a multilingual voice ID">
+    <p class="note">Model: eleven_multilingual_v2. If no key is set, ClearCart uses the browser's built-in voice.</p>
+    <button class="alt" id="mic">🎤 Allow microphone</button><span id="micStatus"></span>
+    <p class="note">Chrome needs microphone permission granted once from an extension page before voice commands work in the side panel.</p>
+  </fieldset>
+
+  <fieldset><legend>Preferences</legend>
+    <label for="lang">Language</label>
+    <select id="lang"><option value="en">English</option><option value="hi">हिंदी (Hindi)</option></select>
+    <label class="check"><input type="checkbox" id="seniorMode"> Senior Mode (bigger text, fewer items, louder alerts)</label>
+    <label class="check"><input type="checkbox" id="autoSpeak"> Speak high-risk warnings automatically</label>
+  </fieldset>
+
+  <fieldset><legend>Complaints</legend>
+    <label for="userName">Your name</label><input id="userName" type="text">
+    <label for="userEmail">Your email</label><input id="userEmail" type="email">
+    <label for="complaintUrl">Complaint form URL</label><input id="complaintUrl" type="url">
+    <p class="note">Default is the local demo form. ClearCart only pre-fills it — you always review and submit yourself.</p>
+  </fieldset>
+
+  <fieldset><legend>Optional backend</legend>
+    <label for="backendUrl">Backend URL</label><input id="backendUrl" type="url" placeholder="http://localhost:8001">
+    <p class="note">Enables LLM classification, AI-written complaints and server-side ElevenLabs TTS. ClearCart works fully without it.</p>
+  </fieldset>
+
+  <button id="save">Save</button><span id="status"></span>
+  <script src="options.js"></script>
+</body></html>
