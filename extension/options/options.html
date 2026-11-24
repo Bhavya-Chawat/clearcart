@@ -1,49 +1,103 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>ClearCart options</title>
+<html lang="en"><head><meta charset="utf-8"><title>ClearCart settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 640px; margin: 30px auto; color: #1B1F6B; padding: 0 16px; }
-  h1 { display: flex; align-items: center; gap: 10px; } h1 img { width: 36px; }
-  fieldset { border: 1px solid #dde; border-radius: 10px; margin: 16px 0; padding: 14px 18px; }
-  legend { font-weight: 700; padding: 0 6px; }
-  label { display: block; margin: 10px 0 4px; font-weight: 600; font-size: 14px; }
-  input[type=text], input[type=password], input[type=email], input[type=url], select { width: 100%; padding: 8px; border: 1px solid #ccd; border-radius: 6px; font: inherit; box-sizing: border-box; }
-  .check { display: flex; gap: 8px; align-items: center; font-weight: 500; }
-  button { background: #1B1F6B; color: #fff; border: 0; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-  button.alt { background: #FD9B36; color: #1B1F6B; }
-  .note { color: #667; font-size: 12px; } #status, #micStatus { margin-left: 10px; font-weight: 600; }
+  @font-face { font-family: "Manrope"; src: url("../fonts/manrope-latin-wght-normal.woff2") format("woff2"); font-weight: 200 800; font-display: swap; }
+  @font-face { font-family: "JetBrains Mono"; src: url("../fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  :root {
+    --ink: #0b0c09; --s1: #14160f; --s2: #1c1f16; --s3: #262a1e; --line: #2a2e22;
+    --text: #f0f2e8; --muted: #a0a692; --faint: #6d7360;
+    --lime: #d6f23a; --lime-ink: #11150a; --lime-dim: #3b4416; --lime-text: #d6f23a;
+    --red: #ff5a4a; --font: "Manrope", "Segoe UI", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  :root:not([data-theme="dark"]) {
+    --ink: #eef0e6; --s1: #ffffff; --s2: #f2f4ea; --s3: #dfe4d0; --line: #dadfcb;
+    --text: #161912; --muted: #585e4c; --faint: #8a907b;
+    --lime: #d3f03a; --lime-ink: #141a05; --lime-dim: #b4cc44; --lime-text: #58760a; --red: #df3b2b;
+  }
+  * { box-sizing: border-box; }
+  html, body { background: var(--ink); }
+  body { margin: 0; font: 500 14px/1.55 var(--font); color: var(--text); -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+  header { padding: 32px 0 18px; }
+  header .wrap { display: flex; align-items: center; gap: 14px; }
+  .mark { color: var(--lime); flex-shrink: 0; }
+  h1 { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.04em; line-height: 1.1; }
+  header p { margin: 4px 0 0; color: var(--muted); font-size: 13px; font-weight: 600; }
+  main { padding-bottom: 28px; }
+
+  section { background: var(--s1); border: 1px solid var(--line); border-radius: 24px; padding: 22px 22px 18px; margin-bottom: 14px; }
+  h2 { margin: 0 0 4px; font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+  .kicker { font: 500 10.5px/1 var(--mono); text-transform: uppercase; letter-spacing: .1em; color: var(--faint); margin: 0 0 10px; }
+  label { display: block; margin: 16px 0 6px; font-weight: 700; font-size: 13px; }
+  input[type=text], input[type=password], input[type=email], input[type=url], select {
+    width: 100%; padding: 11px 14px; border: 1px solid var(--line); border-radius: 14px; font: 600 13.5px var(--font); color: var(--text); background: var(--ink);
+    transition: border-color .15s, box-shadow .15s; appearance: none; -webkit-appearance: none; }
+  select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 38px; }
+  input::placeholder { color: var(--faint); font-weight: 500; }
+  input:focus, select:focus { outline: 0; border-color: var(--lime-text); box-shadow: 0 0 0 3px color-mix(in srgb, var(--lime) 28%, transparent); }
+  .note { color: var(--muted); font-size: 12px; margin: 10px 0 0; font-weight: 500; }
+  .note code { font: 500 11.5px var(--mono); background: var(--s2); padding: 1px 6px; border-radius: 6px; }
+
+  /* switch rows */
+  .check { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); cursor: pointer; font-weight: 700; }
+  .check:last-of-type { border-bottom: 0; padding-bottom: 4px; }
+  .check small { display: block; color: var(--muted); font-size: 12px; font-weight: 500; margin-top: 1px; }
+  .tog { position: relative; display: inline-block; flex-shrink: 0; width: 46px; height: 26px; }
+  .tog input { position: absolute; opacity: 0; inset: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+  .tog i { position: absolute; inset: 0; border-radius: 26px; background: var(--s3); transition: background .2s; pointer-events: none; }
+  .tog i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: var(--faint); transition: transform .22s cubic-bezier(.3,.7,.3,1), background .2s; }
+  .tog input:checked + i { background: var(--lime); } .tog input:checked + i::after { transform: translateX(20px); background: var(--lime-ink); }
+
+  /* buttons */
+  button { font: 800 13.5px var(--font); border: 1px solid transparent; border-radius: 16px; padding: 12px 22px; cursor: pointer; transition: filter .12s, border-color .12s; }
+  button:active { transform: translateY(1px); }
+  #save { background: var(--lime); color: var(--lime-ink); } #save:hover { filter: brightness(1.07); }
+  button.alt { background: transparent; color: var(--lime-text); border-color: var(--lime-dim); margin-top: 14px; display: inline-flex; align-items: center; gap: 8px; } button.alt:hover { border-color: var(--lime-text); }
+  #status, #micStatus { margin-left: 12px; font: 500 12px var(--mono); color: var(--lime-text); }
+  .savebar { position: sticky; bottom: 0; padding: 16px 0 20px; background: linear-gradient(transparent, var(--ink) 38%); display: flex; align-items: center; }
+  :root:not([data-theme="dark"]) section { box-shadow: 0 1px 2px rgba(20,26,5,.05); }
 </style></head>
 <body>
-  <h1><img src="../icons/icon48.png" alt="">ClearCart options</h1>
+  <header><div class="wrap">
+    <svg class="mark" viewBox="0 0 32 32" width="38" height="38" aria-hidden="true"><circle cx="16" cy="16" r="12.5" fill="none" stroke="currentColor" stroke-width="5"/><circle cx="16" cy="16" r="3.2" fill="currentColor"/></svg>
+    <div><h1>ClearCart settings</h1><p>Voice, language, complaints and optional AI backend</p></div>
+  </div></header>
 
-  <fieldset><legend>Voice Guardian</legend>
+  <main class="wrap">
+  <section><div class="kicker">Look</div><h2>Appearance</h2>
+    <label for="theme">Theme</label>
+    <select id="theme"><option value="light">Light</option><option value="dark">Dark</option></select>
+    <label for="lang">Language</label>
+    <select id="lang"><option value="en">English</option><option value="hi">हिंदी (Hindi)</option></select>
+    <label class="check" style="margin-top:8px"><span>Senior Mode<small>Bigger text, fewer items, louder alerts</small></span><span class="tog"><input type="checkbox" id="seniorMode"><i></i></span></label>
+    <label class="check"><span>Speak high-risk warnings<small>Read out serious alerts automatically</small></span><span class="tog"><input type="checkbox" id="autoSpeak"><i></i></span></label>
+  </section>
+
+  <section><div class="kicker">Voice</div><h2>Voice Guardian</h2>
     <label for="elevenKey">ElevenLabs API key (optional)</label>
     <input id="elevenKey" type="password" autocomplete="off" placeholder="Stored only in this browser">
     <label for="voiceId">ElevenLabs voice ID</label>
     <input id="voiceId" type="text" placeholder="e.g. a multilingual voice ID">
-    <p class="note">Model: eleven_multilingual_v2. If no key is set, ClearCart uses the browser's built-in voice.</p>
-    <button class="alt" id="mic">🎤 Allow microphone</button><span id="micStatus"></span>
+    <p class="note">Model: <code>eleven_multilingual_v2</code>. If no key is set, ClearCart uses the browser's built-in voice.</p>
+    <button class="alt" id="mic" type="button">Allow microphone</button><span id="micStatus"></span>
     <p class="note">Chrome needs microphone permission granted once from an extension page before voice commands work in the side panel.</p>
-  </fieldset>
+  </section>
 
-  <fieldset><legend>Preferences</legend>
-    <label for="lang">Language</label>
-    <select id="lang"><option value="en">English</option><option value="hi">हिंदी (Hindi)</option></select>
-    <label class="check"><input type="checkbox" id="seniorMode"> Senior Mode (bigger text, fewer items, louder alerts)</label>
-    <label class="check"><input type="checkbox" id="autoSpeak"> Speak high-risk warnings automatically</label>
-  </fieldset>
-
-  <fieldset><legend>Complaints</legend>
+  <section><div class="kicker">Report</div><h2>Complaints</h2>
     <label for="userName">Your name</label><input id="userName" type="text">
     <label for="userEmail">Your email</label><input id="userEmail" type="email">
     <label for="complaintUrl">Complaint form URL</label><input id="complaintUrl" type="url">
-    <p class="note">Default is the local demo form. ClearCart only pre-fills it — you always review and submit yourself.</p>
-  </fieldset>
+    <p class="note">Default is the local demo form. ClearCart only pre-fills it. You always review and submit yourself.</p>
+  </section>
 
-  <fieldset><legend>Optional backend</legend>
+  <section><div class="kicker">Advanced</div><h2>Optional backend</h2>
     <label for="backendUrl">Backend URL</label><input id="backendUrl" type="url" placeholder="http://localhost:8001">
     <p class="note">Enables LLM classification, AI-written complaints and server-side ElevenLabs TTS. ClearCart works fully without it.</p>
-  </fieldset>
+  </section>
 
-  <button id="save">Save</button><span id="status"></span>
+  <div class="savebar"><button id="save" type="button">Save settings</button><span id="status"></span></div>
+  </main>
   <script src="options.js"></script>
 </body></html>

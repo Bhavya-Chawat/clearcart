@@ -6,7 +6,7 @@
   const RX = {
     time: /\b(\d{1,2}):([0-5]\d)(?::([0-5]\d))?\b/,
     urgency: /(ends?|ending|left|hurry|deal|offer|sale|expires?|expiring|only|limited|last chance|closes?|countdown)/i,
-    scarcity: /\bonly\s+\d+\s+(?:[a-z]+\s+){0,2}(left|remaining|available|in stock)\b|\b\d+\s+left in stock\b/i,
+    scarcity: /\bonly\s+\d+\s+(?:[a-z]+\s+){0,2}(left|remaining|available|in stock)\b|\b\d+\s+left in stock\b|\bwe have\s+\d+\s+left\b|\b\d+\s+left at this price\b|\b\d+\s+(?:rooms?|seats?|units?|tickets?|items?|pieces?|spots?)\s+(?:left|remaining|available)\b|\bonly\s+(?:a\s+)?(?:few|couple)\s+(?:[a-z]+\s+){0,2}left\b/i,
     social: /\b\d+\s+(?:people|users|others|customers|travell?ers|shoppers|guests)\s+(?:are\s+)?(?:viewing|looking|watching|booked|bought|purchased)|\b\d+\s+(?:bought|sold|booked|purchased)\s+in\s+the\s+last/i,
     addon: /(insurance|protect|protection|warranty|donat|\btip\b|priority|add-?on|cover(age)?|assurance|membership|subscription|gift ?wrap)/i,
     shame: /(no thanks,?\s*i\s*(?:'d|would)?\s*(?:like|prefer|love|enjoy|don'?t|do not|hate|want)|i\s+(?:like|love|prefer|enjoy)\s+(?:taking risks|paying|missing)|i\s+don'?t\s+(?:want|care|like)\s+(?:to\s+)?(?:save|saving|protect|deals|discounts|money)|i'?ll\s+pay\s+(?:full|more)|i\s+(?:hate|don'?t like)\s+(?:saving|money|discounts|deals)|continue without (?:protection|saving)|risk it|i'?m not interested in saving)/i,
@@ -117,8 +117,22 @@
       const secs = m[3] !== undefined ? (+m[1]) * 3600 + (+m[2]) * 60 + (+m[3]) : (+m[1]) * 60 + (+m[2]);
       if (!timerHits.some((h) => h.box === box)) timerHits.push({ box, secs, text: m[0] });
     }
+    // Stable identity for a number/timer: the product link or title it sits next to (not its position, which shuffles on listing pages).
+    const anchorKey = (el, rx) => {
+      const g = new RegExp(rx.source, 'gi');
+      let c = el;
+      for (let d = 0; d < 8 && c && c !== document.body; d++, c = c.parentElement) {
+        // stop once the container holds more than one of the same kind of number: it would be shared between products
+        if (((c.textContent || '').match(g) || []).length > 1) break;
+        const a = c.querySelector && c.querySelector('a[href]');
+        if (a && c.getBoundingClientRect().height > 60) {
+          try { const u = new URL(a.href, location.href); if (u.pathname.length > 1) return u.pathname.slice(0, 60); } catch (e) { /* ignore */ }
+        }
+      }
+      return null; // no unique product anchor
+    };
     timerHits.forEach((h, i) => {
-      const k = 'timer' + i;
+      const k = 'timer:' + (anchorKey(h.box, RX.time) || (timerHits.length === 1 ? 'single' : 'idx' + i));
       if (!ctx.current[k]) ctx.current[k] = { remaining: h.secs, ts: urlNow };
       const first = ctx.current[k]; const prev = ctx.prev[k];
       let fake = false;
@@ -136,14 +150,20 @@
 
     // ---- FAKE SCARCITY / SOCIAL PROOF ----
     [['scarcity', RX.scarcity, 'Scarcity claim'], ['social', RX.social, 'Social proof']].forEach(([kind, rx, lbl]) => {
-      findTextElements(rx, 200, els).filter(isVisible).forEach((el, i) => {
-        const k = kind + i, n = numIn(textOf(el).match(rx)[0]);
-        if (!ctx.current[k]) ctx.current[k] = { n, ts: urlNow };
-        const prev = ctx.prev[k];
-        const fake = prev && prev.n !== ctx.current[k].n;
+      const arr = findTextElements(rx, 200, els).filter(isVisible);
+      arr.forEach((el) => {
+        // identity = the product this number belongs to; with no unique anchor we can't tell a change from a reshuffle, so we don't claim "fake"
+        const ak = anchorKey(el, rx) || (arr.length === 1 ? 'single' : null);
+        const k = ak ? kind + ':' + ak : null, n = numIn(textOf(el).match(rx)[0]);
+        let prev = null, fake = false;
+        if (k) {
+          if (!ctx.current[k]) ctx.current[k] = { n, ts: urlNow };
+          prev = ctx.prev[k];
+          fake = !!prev && prev.n !== ctx.current[k].n;
+        }
         add({ key: kind + ':' + eid(el), patternId: 'false_urgency', element: el,
           label: fake ? `Fake ${kind === 'scarcity' ? 'scarcity' : 'social proof'}` : lbl,
-          reason: fake ? `FAKE – the number changed from ${prev.n} to ${ctx.current[k].n} on reload.`
+          reason: fake ? `FAKE – the number changed from ${prev.n} to ${n} on reload.`
                        : `"${textOf(el).slice(0, 60)}" cannot be verified and is used to pressure you.`,
           confidence: fake ? 0.95 : 0.65, action: 'hide', extra: { fake } });
       });
@@ -183,6 +203,8 @@
     ctls.forEach((el, i) => {
       const t = ctlText(el);
       if (!t || t.length > 90) return;
+      // accessibility skip links / in-page anchors and footer policy links are not "decline" buttons
+      if (/^skip to\b|^skip (navigation|nav|main|links?)\b/i.test(t) || (el.tagName === 'A' && /^#/.test(el.getAttribute('href') || '') && /skip/i.test(t))) return;
       const shame = RX.shame.test(t);
       if (shame) add({ key: 'shame:' + eid(el), patternId: 'confirm_shaming', element: el, label: 'Guilt-trip button',
         reason: `"${t}" uses guilt to push you into saying yes.`, confidence: 0.9, action: 'rewrite', extra: { text: t } });
@@ -198,6 +220,7 @@
       const areaRatio = (a.width * a.height) / Math.max(1, b.width * b.height);
       const fontRatio = parseFloat(ca.fontSize) / Math.max(1, parseFloat(cb.fontSize));
       const lowContrast = contrastWithWhite(cb.color) < 2.2 && cb.backgroundColor.replace(/\s/g, '').match(/rgba\(0,0,0,0\)|transparent/);
+      if (b.width < 10 || b.height < 10) return; // visually hidden control, not a real choice
       if (areaRatio > 3 || fontRatio > 1.4 || lowContrast) {
         add({ key: 'iface:' + eid(el), patternId: 'interface_interference', element: el, label: 'Hidden "No" option',
           reason: `The "${ctlText(accept).slice(0, 30)}" button is ${areaRatio > 3 ? Math.round(areaRatio) + '× bigger' : 'much more prominent'} than "${t.slice(0, 30)}"${lowContrast ? ' (which is faint grey)' : ''}.`,
@@ -215,22 +238,38 @@
     });
 
     // ---- DISGUISED ADS: sponsored markers styled like organic results ----
-    els.filter((el) => el.children.length === 0 && RX.adLabel.test(el.textContent || '') && isVisible(el)).forEach((marker, i) => {
-      let card = marker.parentElement;
-      for (let d = 0; d < 4 && card && card !== document.body; d++, card = card.parentElement) {
-        const sib = Array.from(card.parentElement ? card.parentElement.children : []).find((s) => s !== card && s.tagName === card.tagName && s.className === card.className && !RX.adLabel.test(textOf(s)));
-        if (sib) {
-          const fs = parseFloat(getComputedStyle(marker).fontSize);
-          add({ key: 'ad:' + eid(card), patternId: 'disguised_advertisement', element: card, label: 'Disguised ad',
-            reason: `This paid listing looks exactly like the real results; the "${textOf(marker)}" label is ${fs < 11 ? 'tiny (' + fs + 'px)' : 'easy to miss'}.`,
-            confidence: 0.85, action: 'explain' });
-          break;
+    const adMarkers = els.filter((el) => el.children.length <= 1 && (el.textContent || '').trim().length < 24 && RX.adLabel.test((el.textContent || '').trim()) && isVisible(el));
+    const adCards = new Set();
+    adMarkers.slice(0, 40).forEach((marker) => {
+      // find the result card: nearest ancestor that holds an image + link and has similar siblings
+      let card = marker.parentElement, found = null;
+      for (let d = 0; d < 12 && card && card !== document.body; d++, card = card.parentElement) {
+        const par = card.parentElement; if (!par) break;
+        const r = card.getBoundingClientRect();
+        if (r.width < 120 || r.height < 80 || r.width > innerWidth * 0.98) continue;
+        if (!card.querySelector('img, picture, svg') || !card.querySelector('a[href]')) continue;
+        const sibs = Array.from(par.children).filter((s2) => s2 !== card && s2.tagName === card.tagName && !s2.querySelector('[data-cc-ui]'));
+        const similar = sibs.filter((s2) => { const q = s2.getBoundingClientRect(); return q.height > 0 && Math.abs(q.height - r.height) / Math.max(r.height, 1) < 0.5 && Math.abs(q.width - r.width) / Math.max(r.width, 1) < 0.5; });
+        if (similar.length >= 1) { found = card; break; }
+      }
+      if (!found) { // fallback: card with an identical-class sibling (simple/demo markup)
+        let c2 = marker.parentElement;
+        for (let d = 0; d < 4 && c2 && c2 !== document.body; d++, c2 = c2.parentElement) {
+          const sib = Array.from(c2.parentElement ? c2.parentElement.children : []).find((s3) => s3 !== c2 && s3.tagName === c2.tagName && s3.className === c2.className && !RX.adLabel.test(textOf(s3)));
+          if (sib) { found = c2; break; }
         }
       }
+      if (!found || adCards.has(found)) return;
+      adCards.add(found);
+      const fs = parseFloat(getComputedStyle(marker).fontSize);
+      add({ key: 'ad:' + eid(found), patternId: 'disguised_advertisement', element: found, label: 'Disguised ad',
+        reason: `This paid listing looks exactly like the real results; the "${textOf(marker)}" label is ${fs < 12 ? 'tiny (' + fs + 'px)' : 'easy to miss'}.`,
+        confidence: 0.85, action: 'explain' });
     });
 
     // ---- FAKE BUTTONS: download/start buttons that are ads ----
-    const dl = clickables(els).filter((el) => RX.dlBtn.test(ctlText(el)) && isVisible(el));
+    const APP_PROMO = /\b(app|apps|audible|audio ?books?|kindle|play store|app store|google play)\b/i, APP_HOST = /(play\.google\.com|apps\.apple\.com|itunes\.apple\.com|app\.link|onelink\.me)/i;
+    const dl = clickables(els).filter((el) => RX.dlBtn.test(ctlText(el)) && !APP_PROMO.test(ctlText(el)) && !APP_HOST.test(el.getAttribute('href') || '') && isVisible(el));
     const realButtons = [];
     if (dl.length >= 2) {
       dl.forEach((el, i) => {

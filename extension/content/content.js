@@ -26,11 +26,26 @@
     return Math.max(0, Math.round(s));
   }
 
+  // nearest card title (hotel / product name) for a flagged element, so the panel can list matches by name
+  function whereOf(el) {
+    const SEL = 'h1,h2,h3,h4,[role="heading"],[data-testid="title"]';
+    let c = el;
+    for (let d = 0; d < 8 && c && c !== document.body; d++, c = c.parentElement) {
+      const hs = c.querySelectorAll ? c.querySelectorAll(SEL) : [];
+      if (hs.length > 1) return ''; // container is shared by several cards
+      if (hs.length === 1) { const t = (hs[0].innerText || '').trim().replace(/\s+/g, ' '); if (t.length > 2) return t.slice(0, 60); }
+    }
+    return '';
+  }
+  const byPosition = (a, b) => (a.element && b.element && a.element !== b.element ? (a.element.compareDocumentPosition(b.element) & 4 ? -1 : 1) : 0);
+
   function publicState() {
-    const list = Array.from(findings.values()).map((f) => ({
+    const list = Array.from(findings.values()).sort(byPosition).map((f) => ({
       id: f.id, patternId: f.patternId, patternName: (CC_PATTERNS[f.patternId] || {}).name, label: f.label, reason: f.reason,
       confidence: f.confidence, action: f.action, amount: f.amount || null, severity: (CC_PATTERNS[f.patternId] || {}).severity,
-      fake: !!(f.extra && f.extra.fake), unticked: !!f.unticked, blocked: !!f.blocked
+      fake: !!(f.extra && f.extra.fake), unticked: !!f.unticked, blocked: !!f.blocked,
+      text: f.element ? String(f.element.innerText || f.element.value || '').trim().replace(/\s+/g, ' ').slice(0, 70) : '',
+      where: f.element ? whereOf(f.element) : ''
     }));
     const sc = score();
     const meta = document.querySelector('meta[name="cc-product"]');

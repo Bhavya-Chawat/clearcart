@@ -256,9 +256,10 @@ async function speakWarning(text, lang) {
 }
 
 function setBadge(tabId, state) {
-  const color = { green: '#1fbf4a', amber: '#FD9B36', red: '#e53935' }[state.badge];
+  const color = { green: '#d6f23a', amber: '#ffb340', red: '#ff5a4a' }[state.badge];
   chrome.action.setBadgeText({ tabId, text: state.findings.length ? String(state.findings.length) : '' }).catch(() => {});
   chrome.action.setBadgeBackgroundColor({ tabId, color }).catch(() => {});
+  if (chrome.action.setBadgeTextColor) chrome.action.setBadgeTextColor({ tabId, color: '#11150a' }).catch(() => {});
 }
 
 async function classify(snippets) {
